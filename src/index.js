@@ -149,7 +149,23 @@ async function run() {
             result.push(res);
          }
 
-         //console.log(JSON.stringify(result, 2, 3))
+         const info = {
+            name: null,
+            description: null,
+            path: {
+               content: null,
+               params: [],
+               query: []
+            },
+            type: null,
+            headers: [],
+            body: [],
+            result: {
+               error: [],
+               success: []
+            },
+            permissions: []
+         }
 
          for (const el of result) {
             if (el.arg === 'interface') {
@@ -293,12 +309,78 @@ async function run() {
 
                schemas.push(el);
             }
+
+            if (el.arg === 'name') {
+               info.name = el.name;
+            }
+
+            if (el.arg === 'desc') {
+               info.description = el.name;
+            }
+
+            if (el.arg === 'path') {
+               info.path.content = el.name;
+            }
+
+            if (el.arg === 'param') {
+               info.path.params.push({
+                  name: el.name,
+                  description: el.description,
+                  type: el.type
+               });
+            }
+
+            if (el.arg === 'query') {
+               info.path.query.push({
+                  name: el.name,
+                  description: el.description,
+                  type: el.type
+               });
+            }
+
+            if (el.arg === 'type') {
+               info.type = el.name;
+            }
+
+            if (el.arg === 'body') {
+               info.body = el.type;
+            }
+
+            if (el.arg === 'permissions') {
+               for (const tmp of el.name.split(',')) {
+                  info.permissions.push(tmp.trim());
+               }
+            }
+
+            if (el.arg === 'error') {
+               info.result.error.push({
+                  code: el.name,
+                  description: el.description,
+                  type: el.type
+               });
+            }
+
+            if (el.arg === 'success') {
+               info.result.success.push({
+                  code: el.name,
+                  description: el.description,
+                  type: el.type
+               });
+            }
+
+            if (el.arg === 'header') {
+               info.headers.push({
+                  name: el.name,
+                  description: el.description,
+                  type: el.type
+               });
+            }
          }
+
+         console.log(JSON.stringify(info, 3, 3))
 
          result.splice(0);
       }
-
-      console.log(JSON.stringify(schemas, 3, 3))
 
       console.log(`| Founded ${codes.length} documentation comment block`);
    }
