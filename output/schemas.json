@@ -1,0 +1,58 @@
+[
+   {
+      "name": "CustomObj",
+      "type": [
+         {
+            "name": "prop",
+            "type": "string"
+         },
+         {
+            "name": "prop2",
+            "type": "number"
+         },
+         {
+            "name": "prop3",
+            "type": [
+               {
+                  "name": "prop",
+                  "type": "string"
+               }
+            ]
+         },
+         {
+            "name": "prop1"
+         }
+      ],
+      "from": "interface",
+      "file": "resources\\test.ts",
+      "line": 2
+   },
+   {
+      "name": "MyObject",
+      "description": "обьект тестовый",
+      "type": [
+         {
+            "name": "id",
+            "description": "айди обьекта",
+            "type": "number"
+         },
+         {
+            "name": "test",
+            "type": [
+               {
+                  "name": "test2",
+                  "description": "тестовый обьект для парсинга",
+                  "type": "number | string"
+               },
+               {
+                  "name": "id",
+                  "type": "number"
+               }
+            ]
+         }
+      ],
+      "from": "schema",
+      "file": "resources\\test.ts",
+      "line": 11
+   }
+]

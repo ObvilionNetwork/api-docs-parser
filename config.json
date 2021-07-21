@@ -1,10 +1,13 @@
 {
-  "routes_dir": "resources",
+  "resources": "./resources",
+  "output": "./output",
+
   "api_prefix": "/api",
   "docs_separator": "=",
+
   "extensions": [ "js", "ts" ],
-  "blacklist_files": [
-    "resourses\\todo.routes.js",
-    "resourses\\bugs.routes.js"
+  "blacklist": [
+    "test1.ts",
+    "bugs.routes.js"
   ]
 }

@@ -1,16 +1,32 @@
 const { readdir, readFile, lstat, writeFile } = require('fs/promises');
 const { join } = require('path');
-const { routes_dir, docs_separator } = require('../config.json');
+const { resources, output, docs_separator, api_prefix, extensions, blacklist } = require('../config.json');
 
 const schemas = [];
+const docs = [];
 
 async function run() {
    const run_time = Date.now();
-   const all_files = await get_all_files(routes_dir);
+   const all_files = await get_all_files(resources);
 
-   console.log(`All files were read for ${Date.now() - run_time} ms. Count: ${all_files.length}`);
+   console.log(`| All files were read for ${Date.now() - run_time} ms. Count: ${all_files.length}`);
+   console.log(``);
 
    for (const fi of all_files) {
+      const ext = fi.split('.');
+      if (extensions.indexOf(ext[ext.length - 1]) === -1) {
+         continue;
+      }
+
+      let r = false;
+      for (const b of blacklist) {
+         if (join(resources, b) === fi) {
+            r = true;
+            break;
+         }
+      }
+      if (r) continue;
+
       console.log(`Starting parsing file ${fi}`);
 
       const data = await readFile(fi, 'utf8');
@@ -301,7 +317,7 @@ async function run() {
                });
             }
 
-            if (el.arg === 'schema') {
+            else if (el.arg === 'schema') {
                el.from = 'schema';
                el.file = fi;
                el.line = code.start_line;
@@ -310,19 +326,23 @@ async function run() {
                schemas.push(el);
             }
 
-            if (el.arg === 'name') {
+            else if (el.arg === 'name') {
                info.name = el.name;
             }
 
-            if (el.arg === 'desc') {
+            else if (el.arg === 'desc') {
                info.description = el.name;
             }
 
-            if (el.arg === 'path') {
-               info.path.content = el.name;
+            else if (el.arg === 'path') {
+               if (el.name.startsWith('/')) {
+                  info.path.content = api_prefix + el.name;
+               } else {
+                  info.path.content = api_prefix + '/' + el.name;
+               }
             }
 
-            if (el.arg === 'param') {
+            else if (el.arg === 'param') {
                info.path.params.push({
                   name: el.name,
                   description: el.description,
@@ -330,7 +350,7 @@ async function run() {
                });
             }
 
-            if (el.arg === 'query') {
+            else if (el.arg === 'query') {
                info.path.query.push({
                   name: el.name,
                   description: el.description,
@@ -338,21 +358,21 @@ async function run() {
                });
             }
 
-            if (el.arg === 'type') {
+            else if (el.arg === 'type') {
                info.type = el.name;
             }
 
-            if (el.arg === 'body') {
+            else if (el.arg === 'body') {
                info.body = el.type;
             }
 
-            if (el.arg === 'permissions') {
+            else if (el.arg === 'permissions') {
                for (const tmp of el.name.split(',')) {
                   info.permissions.push(tmp.trim());
                }
             }
 
-            if (el.arg === 'error') {
+            else if (el.arg === 'error') {
                info.result.error.push({
                   code: el.name,
                   description: el.description,
@@ -360,7 +380,7 @@ async function run() {
                });
             }
 
-            if (el.arg === 'success') {
+            else if (el.arg === 'success') {
                info.result.success.push({
                   code: el.name,
                   description: el.description,
@@ -368,7 +388,7 @@ async function run() {
                });
             }
 
-            if (el.arg === 'header') {
+            else if (el.arg === 'header') {
                info.headers.push({
                   name: el.name,
                   description: el.description,
@@ -377,13 +397,19 @@ async function run() {
             }
          }
 
-         console.log(JSON.stringify(info, 3, 3))
+         if (info.path.content != null)
+         docs.push(info);
 
          result.splice(0);
       }
 
       console.log(`| Founded ${codes.length} documentation comment block`);
    }
+
+   await writeFile(join(output, 'docs.json'), JSON.stringify(docs, 3, 3));
+   await writeFile(join(output, 'schemas.json'), JSON.stringify(schemas, 3, 3));
+
+   console.log(`| End of script. Parsed on ${Date.now() - run_time} ms.`);
 }
 
 async function parse_obj(str) {
