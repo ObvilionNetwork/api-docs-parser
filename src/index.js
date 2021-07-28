@@ -503,7 +503,10 @@ async function parse_obj(str) {
          if (!name) delete el.name;
          if (!description) delete el.description;
          if (!type) delete el.type;
-         result.push(el);
+
+         if (type || description || name) {
+            result.push(el);
+         }
       }
 
       if (result.length === 1 && !result[0].description

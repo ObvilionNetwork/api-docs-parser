@@ -13,7 +13,7 @@ interface CustomObj {
 *   id {#number} - айди обьекта;
 *   test {
 *       test2 {#number | #string} - тестовый обьект для парсинга;
-*       id {#number}
+*       id {#number};
 *   }
 * } - обьект тестовый
 */
@@ -35,12 +35,12 @@ interface CustomObj {
 *   id {#number} - айди обьекта;
 *   test {
 *       test2 {#number | #string} - тестовый обьект для парсинга;
-*       id {#number}
+*       id {#number};
 *   }
 * }
 *
 * @error 10013 { #Error } - Файлы сервера не найдены
 * @success 20001 {
-*    files { #File[] } - Тестовое описание
+*    files { #File[] } - Тестовое описание;
 * } - Список файлов выдан
 */
