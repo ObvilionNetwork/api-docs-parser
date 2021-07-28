@@ -453,8 +453,8 @@ async function parse_obj(str) {
 
    const rl = parce();
    const get_json = (p_comp) => {
-      // Разделяем переменные через ','
-      const rl_all = p_comp.content.split(',');
+      // Разделяем переменные через ';'
+      const rl_all = p_comp.content.split(';');
       let result = [];
 
       let i = 0;

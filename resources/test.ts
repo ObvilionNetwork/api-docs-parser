@@ -10,9 +10,9 @@ interface CustomObj {
 
 /*=
 * @schema MyObject {
-*   id {#number} - айди обьекта,
+*   id {#number} - айди обьекта;
 *   test {
-*       test2 {#number | #string} - тестовый обьект для парсинга,
+*       test2 {#number | #string} - тестовый обьект для парсинга;
 *       id {#number}
 *   }
 * } - обьект тестовый
@@ -32,9 +32,9 @@ interface CustomObj {
 * @header Authorization {#token} - Ключ авторизации
 *
 * @body {
-*   id {#number} - айди обьекта,
+*   id {#number} - айди обьекта;
 *   test {
-*       test2 {#number | #string} - тестовый обьект для парсинга,
+*       test2 {#number | #string} - тестовый обьект для парсинга;
 *       id {#number}
 *   }
 * }
