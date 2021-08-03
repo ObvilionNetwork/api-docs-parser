@@ -24,7 +24,7 @@
          }
       ],
       "from": "interface",
-      "file": "resources\\test.ts",
+      "file": "example\\test.ts",
       "line": 3
    },
    {
@@ -52,7 +52,7 @@
          }
       ],
       "from": "schema",
-      "file": "resources\\test.ts",
+      "file": "example\\test.ts",
       "line": 12
    }
 ]

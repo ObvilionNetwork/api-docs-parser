@@ -1,13 +1,13 @@
 {
-  "source": "./resources",
-  "output": "./output",
+  "source": "./example",
+  "output": "./example/output",
 
   "api_prefix": "/api",
   "docs_separator": "=",
 
   "extensions": [ "js", "ts" ],
   "blacklist": [
-    "test1.ts",
-    "bugs.routes.js"
+    "output/docs.json",
+    "output/schemas.json"
   ]
 }
