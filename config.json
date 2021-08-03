@@ -1,5 +1,5 @@
 {
-  "resources": "./resources",
+  "source": "./resources",
   "output": "./output",
 
   "api_prefix": "/api",

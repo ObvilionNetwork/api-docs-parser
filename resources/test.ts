@@ -1,3 +1,4 @@
+
 /*= @interface */
 interface CustomObj {
     prop: string;
@@ -21,6 +22,35 @@ interface CustomObj {
 /*=
 * @name Тестовый роут
 * @desc Описание роута
+*
+* @path /path/to/{route}?={id}
+* @type GET
+*
+* @param route - Название какое-то
+* @query id - ID какой-то
+* @permissions TEST_1, TEST_2
+*
+* @header Authorization {#token} - Ключ авторизации
+*
+* @body {
+*   id {#number} - айди обьекта;
+*   test {
+*       test2 {#number | #string} - тестовый обьект для парсинга;
+*       id {#number};
+*   }
+* }
+*
+* @error 10013 { #Error } - Файлы сервера не найдены
+* @success 20001 {
+*    files { #File[] } - Тестовое описание;
+* } - Список файлов выдан
+*/
+
+/*= @group Тестовое название 2 - Опять хрень для тестов */
+
+/*=
+* @name Тестовый роут 2
+* @desc Описание роута 2
 *
 * @path /path/to/{route}?={id}
 * @type GET

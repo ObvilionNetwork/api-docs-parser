@@ -1,76 +1,160 @@
 [
    {
-      "name": "Тестовый роут",
-      "description": "Описание роута",
-      "path": {
-         "content": "/api/path/to/{route}?={id}",
-         "params": [
-            {
-               "name": "route",
-               "description": "Название какое-то"
-            }
-         ],
-         "query": [
-            {
-               "name": "id",
-               "description": "ID какой-то"
-            }
-         ]
-      },
-      "type": "GET",
-      "headers": [
+      "content": [
          {
-            "name": "Authorization",
-            "description": "Ключ авторизации",
-            "type": "token"
-         }
-      ],
-      "body": [
-         {
-            "name": "id",
-            "description": "айди обьекта",
-            "type": "number"
-         },
-         {
-            "name": "test",
-            "type": [
+            "name": "Тестовый роут",
+            "description": "Описание роута",
+            "path": {
+               "content": "/api/path/to/{route}?={id}",
+               "params": [
+                  {
+                     "name": "route",
+                     "description": "Название какое-то"
+                  }
+               ],
+               "query": [
+                  {
+                     "name": "id",
+                     "description": "ID какой-то"
+                  }
+               ]
+            },
+            "type": "GET",
+            "headers": [
                {
-                  "name": "test2",
-                  "description": "тестовый обьект для парсинга",
-                  "type": "number | string"
-               },
+                  "name": "Authorization",
+                  "description": "Ключ авторизации",
+                  "type": "token"
+               }
+            ],
+            "body": [
                {
                   "name": "id",
+                  "description": "айди обьекта",
                   "type": "number"
+               },
+               {
+                  "name": "test",
+                  "type": [
+                     {
+                        "name": "test2",
+                        "description": "тестовый обьект для парсинга",
+                        "type": "number | string"
+                     },
+                     {
+                        "name": "id",
+                        "type": "number"
+                     }
+                  ]
                }
+            ],
+            "result": {
+               "error": [
+                  {
+                     "code": "10013",
+                     "description": "Файлы сервера не найдены",
+                     "type": "Error"
+                  }
+               ],
+               "success": [
+                  {
+                     "code": "20001",
+                     "description": "Список файлов выдан",
+                     "type": [
+                        {
+                           "name": "files",
+                           "description": "Тестовое описание",
+                           "type": "File[]"
+                        }
+                     ]
+                  }
+               ]
+            },
+            "permissions": [
+               "TEST_1",
+               "TEST_2"
+            ]
+         }
+      ]
+   },
+   {
+      "content": [
+         {
+            "name": "Тестовый роут 2",
+            "description": "Описание роута 2",
+            "path": {
+               "content": "/api/path/to/{route}?={id}",
+               "params": [
+                  {
+                     "name": "route",
+                     "description": "Название какое-то"
+                  }
+               ],
+               "query": [
+                  {
+                     "name": "id",
+                     "description": "ID какой-то"
+                  }
+               ]
+            },
+            "type": "GET",
+            "headers": [
+               {
+                  "name": "Authorization",
+                  "description": "Ключ авторизации",
+                  "type": "token"
+               }
+            ],
+            "body": [
+               {
+                  "name": "id",
+                  "description": "айди обьекта",
+                  "type": "number"
+               },
+               {
+                  "name": "test",
+                  "type": [
+                     {
+                        "name": "test2",
+                        "description": "тестовый обьект для парсинга",
+                        "type": "number | string"
+                     },
+                     {
+                        "name": "id",
+                        "type": "number"
+                     }
+                  ]
+               }
+            ],
+            "result": {
+               "error": [
+                  {
+                     "code": "10013",
+                     "description": "Файлы сервера не найдены",
+                     "type": "Error"
+                  }
+               ],
+               "success": [
+                  {
+                     "code": "20001",
+                     "description": "Список файлов выдан",
+                     "type": [
+                        {
+                           "name": "files",
+                           "description": "Тестовое описание",
+                           "type": "File[]"
+                        }
+                     ]
+                  }
+               ]
+            },
+            "permissions": [
+               "TEST_1",
+               "TEST_2"
             ]
          }
       ],
-      "result": {
-         "error": [
-            {
-               "code": "10013",
-               "description": "Файлы сервера не найдены",
-               "type": "Error"
-            }
-         ],
-         "success": [
-            {
-               "code": "20001",
-               "description": "Список файлов выдан",
-               "type": [
-                  {
-                     "name": "files",
-                     "description": "Тестовое описание",
-                     "type": "File[]"
-                  }
-               ]
-            }
-         ]
-      },
-      "permissions": [
-         "TEST_1",
-         "TEST_2"
-      ]
+      "name": "Тестовое название 2",
+      "description": "Опять хрень для тестов"
    }
 ]

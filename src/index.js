@@ -1,16 +1,18 @@
+#!/usr/bin/node
+
 const { readdir, readFile, lstat, writeFile } = require('fs/promises');
 const { join } = require('path');
-const { resources, output, docs_separator, api_prefix, extensions, blacklist } = require('../config.json');
+const { source, output, docs_separator, api_prefix, extensions, blacklist } = require('../config.json');
 
 const schemas = [];
 const docs = [];
 
 async function run() {
    const run_time = Date.now();
-   const all_files = await get_all_files(resources);
+   const all_files = await get_all_files(source);
 
    console.log(`| All files were read for ${Date.now() - run_time} ms. Count: ${all_files.length}`);
-   console.log(``);
+   console.log('');
 
    for (const fi of all_files) {
       const ext = fi.split('.');
@@ -20,7 +22,7 @@ async function run() {
 
       let r = false;
       for (const b of blacklist) {
-         if (join(resources, b) === fi) {
+         if (join(source, b) === fi) {
             r = true;
             break;
          }
@@ -43,7 +45,7 @@ async function run() {
          if (!left) {
             const sch_right = line.split('*/');
             if (sch_right.length === 1) {
-               code += line + '\n';
+               code += `${line}\n`;
                continue;
             }
 
@@ -72,13 +74,15 @@ async function run() {
          }
       }
 
+      let file_group = {
+         content: []
+      }
+
       for (const code of codes) {
          let content = code.code;
-         const nns = content.split('\n')
+         const nns = content.split('\n');
 
-         content = nns.map(v => {
-            return v.startsWith('*') ? v.replace('*', '').trim() : v.trim();
-         }).join('\n');
+         content = nns.map((v) => (v.startsWith('*') ? v.replace('*', '').trim() : v.trim())).join('\n');
 
          const args = content.split('@');
          args.splice(0, 1);
@@ -88,9 +92,9 @@ async function run() {
             const start_time = Date.now();
 
             const full_line = line.split('\n').join(' ').trim();
-            let line_args = full_line.split(' ');
+            const line_args = full_line.split(' ');
 
-            console.debug(`+--> Обработка строки: "@${full_line}"`)
+            console.debug(`+--> Обработка строки: "@${full_line}"`);
 
             /* TYPE */
             const type = line_args[0];
@@ -99,7 +103,7 @@ async function run() {
             /* NAME AND DOC TYPE */
             let name = null;
             let description = null;
-            let doc_type = null
+            let doc_type = null;
             for (const arg of line_args) {
                if (arg.startsWith('{')) {
                   name = line_args.splice(0, line_args.indexOf(arg)).join(' ');
@@ -110,7 +114,7 @@ async function run() {
                      description = temp[temp.length - 1].replace(' - ', '');
                   }
 
-                  doc_type = line.replace(temp[temp.length - 1], '')
+                  doc_type = line.replace(temp[temp.length - 1], '');
 
                   break;
                }
@@ -122,7 +126,7 @@ async function run() {
 
                let temp = name.split(' - ');
                if (name.startsWith('- ')) {
-                  temp = name.split('- ')
+                  temp = name.split('- ');
                }
 
                name = temp[0] === '' ? null : temp[0];
@@ -133,34 +137,36 @@ async function run() {
             try {
                 type_arr = doc_type == null ? null : await parse_obj(doc_type);
             } catch (e) {
-               console.error(`| Error on parsing file ${fi}:${id + 1} ${e.message}`)
+               console.error(`| Error on parsing file ${fi}:${id + 1} ${e.message}`);
             }
 
             const res = {
-               arg: type, name, description,
-               type: type_arr
+               arg: type,
+               name,
+               description,
+               type: type_arr,
             };
 
             if (type) {
-               console.debug(`| TYPE: ${type}`)
+               console.debug(`| TYPE: ${type}`);
             } else delete res.arg;
 
             if (name) {
-               console.debug(`| NAME: ${name}`)
-            } else delete res.name
+               console.debug(`| NAME: ${name}`);
+            } else delete res.name;
 
             if (description) {
-               console.debug(`| DESCRIPTION: ${description}`)
-            } else delete res.description
+               console.debug(`| DESCRIPTION: ${description}`);
+            } else delete res.description;
 
             if (doc_type) {
-               console.debug(`| DOC TYPE: ${type_arr}`)
-            } else delete res.type
+               console.debug(`| DOC TYPE: ${type_arr}`);
+            } else delete res.type;
 
-            console.debug(`+--< Завершено за ${Date.now() - start_time} мс.`)
-            console.log(``)
+            console.debug(`+--< Завершено за ${Date.now() - start_time} мс.`);
+            console.log('');
 
-            //console.debug(JSON.stringify(res, 2, 2))
+            // console.debug(JSON.stringify(res, 2, 2))
 
             result.push(res);
          }
@@ -171,17 +177,17 @@ async function run() {
             path: {
                content: null,
                params: [],
-               query: []
+               query: [],
             },
             type: null,
             headers: [],
             body: [],
             result: {
                error: [],
-               success: []
+               success: [],
             },
-            permissions: []
-         }
+            permissions: [],
+         };
 
          for (const el of result) {
             if (el.arg === 'interface') {
@@ -190,7 +196,7 @@ async function run() {
                let ln = lines_copy.join(' ').trim();
 
                if (ln.startsWith(' interface ')) {
-                  console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - 'interface' not found!`)
+                  console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - 'interface' not found!`);
                   break;
                }
 
@@ -198,13 +204,13 @@ async function run() {
 
                const temp_4 = ln.split('{');
                if (temp_4.length === 1) {
-                  console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - Incorrect interface code block! '{' Not found`)
+                  console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - Incorrect interface code block! '{' Not found`);
                   break;
                }
 
                const name = temp_4[0].trim().split(' ');
                if (name.length !== 1) {
-                  console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - Incorrect interface code block! Invalid interface name`)
+                  console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - Incorrect interface code block! Invalid interface name`);
                   break;
                }
 
@@ -219,12 +225,12 @@ async function run() {
 
                symbols = symbols.join(' ').split('');
 
-               const parce = () => {
+               const parse = () => {
                   let result = '';
-                  let p = {
+                  const p = {
                      content: '',
-                     rows: []
-                  }
+                     rows: [],
+                  };
 
                   while (true) {
                      const n = symbols[0];
@@ -232,7 +238,7 @@ async function run() {
 
                      if (n === '{') {
                         result += '{}';
-                        p.rows.push(parce());
+                        p.rows.push(parse());
                         continue;
                      }
 
@@ -244,22 +250,22 @@ async function run() {
                      result += n;
 
                      if (symbols.length === 0) {
-                        console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - Not found \'}\' in comment block.`)
+                        console.log(`| Error on parsing file ${fi}:${code.end_line + 1} - Not found \'}\' in comment block.`);
                         break;
                      }
                   }
 
                   return p;
-               }
+               };
 
-               const res = parce();
+               const res = parse();
 
                const get_json = (p_comp) => {
                   // Разделяем переменные через ';'
                   const rk_all = p_comp.content.split(';');
                   const rl_all = [];
                   for (const rk of rk_all) {
-                     rk.split(',').forEach(e => rl_all.push(e))
+                     rk.split(',').forEach((e) => rl_all.push(e));
                   }
 
                   let result = [];
@@ -268,7 +274,7 @@ async function run() {
                   for (const ob of rl_all) {
                      // Ищем ':' и забираем имя (слева)
                      const args = ob.split(':');
-                     let name = args[0].trim();
+                     const name = args[0].trim();
 
                      if (name === '') continue;
 
@@ -292,7 +298,7 @@ async function run() {
                      }
 
                      const el = {
-                        name, type
+                        name, type,
                      };
 
                      if (type == null) delete el.type;
@@ -306,14 +312,14 @@ async function run() {
                   }
 
                   return result;
-               }
+               };
 
                schemas.push({
                   name: name[0],
                   type: get_json(res),
                   from: 'interface',
                   file: fi,
-                  line: code.end_line + 1
+                  line: code.end_line + 1,
                });
             }
 
@@ -338,7 +344,7 @@ async function run() {
                if (el.name.startsWith('/')) {
                   info.path.content = api_prefix + el.name;
                } else {
-                  info.path.content = api_prefix + '/' + el.name;
+                  info.path.content = `${api_prefix}/${el.name}`;
                }
             }
 
@@ -346,7 +352,7 @@ async function run() {
                info.path.params.push({
                   name: el.name,
                   description: el.description,
-                  type: el.type
+                  type: el.type,
                });
             }
 
@@ -354,7 +360,7 @@ async function run() {
                info.path.query.push({
                   name: el.name,
                   description: el.description,
-                  type: el.type
+                  type: el.type,
                });
             }
 
@@ -376,7 +382,7 @@ async function run() {
                info.result.error.push({
                   code: el.name,
                   description: el.description,
-                  type: el.type
+                  type: el.type,
                });
             }
 
@@ -384,7 +390,7 @@ async function run() {
                info.result.success.push({
                   code: el.name,
                   description: el.description,
-                  type: el.type
+                  type: el.type,
                });
             }
 
@@ -392,22 +398,41 @@ async function run() {
                info.headers.push({
                   name: el.name,
                   description: el.description,
-                  type: el.type
+                  type: el.type,
                });
+            }
+
+            else if (el.arg === 'group') {
+               if (file_group.content.length > 0) {
+                  docs.push(file_group);
+               }
+
+               file_group = {
+                  content: []
+               }
+
+               file_group.name = el.name;
+
+               if (el.description) {
+                  file_group.description = el.description;
+               }
             }
          }
 
-         if (info.path.content != null)
-         docs.push(info);
+         if (info.path.content != null) file_group.content.push(info);
 
          result.splice(0);
+      }
+
+      if (file_group.content.length > 0) {
+         docs.push(file_group);
       }
 
       console.log(`| Founded ${codes.length} documentation comment block`);
    }
 
-   await writeFile(join(output, 'docs.json'), JSON.stringify(docs, 3, 3));
-   await writeFile(join(output, 'schemas.json'), JSON.stringify(schemas, 3, 3));
+   await writeFile(join(output, 'docs.json'), JSON.stringify(docs, null, 3));
+   await writeFile(join(output, 'schemas.json'), JSON.stringify(schemas, null, 3));
 
    console.log(`| End of script. Parsed on ${Date.now() - run_time} ms.`);
 }
@@ -417,12 +442,12 @@ async function parse_obj(str) {
    str = str.trim();
    const l = str.split('');
 
-   const parce = () => {
+   const parse = () => {
       let content2 = '';
-      let p = {
+      const p = {
          content: '',
-         rows: []
-      }
+         rows: [],
+      };
 
       while (true) {
          const n = l[0];
@@ -430,7 +455,7 @@ async function parse_obj(str) {
 
          if (n === '{') {
             content2 += '{}';
-            p.rows.push(parce());
+            p.rows.push(parse());
             continue;
          }
 
@@ -440,8 +465,7 @@ async function parse_obj(str) {
          }
 
          if (l.length === 0) {
-            throw Error('Not found \'}\' in comment block.')
-            break;
+            throw Error('Not found \'}\' in comment block.');
          }
 
          content2 += n;
@@ -449,9 +473,9 @@ async function parse_obj(str) {
 
       if (p.rows.length === 0) delete p.rows;
       return p;
-   }
+   };
 
-   const rl = parce();
+   const rl = parse();
    const get_json = (p_comp) => {
       // Разделяем переменные через ';'
       const rl_all = p_comp.content.split(';');
@@ -465,7 +489,7 @@ async function parse_obj(str) {
 
          let description = null;
          // Ищем описание по первому ' - '
-         let desc_arg = ob.split(' - ');
+         const desc_arg = ob.split(' - ');
          if (desc_arg.length > 1) {
             desc_arg.splice(0, 1);
             description = desc_arg.join(' - ');
@@ -497,7 +521,7 @@ async function parse_obj(str) {
          }
 
          const el = {
-            name, description, type
+            name, description, type,
          };
 
          if (!name) delete el.name;
@@ -515,7 +539,7 @@ async function parse_obj(str) {
       }
 
       return result;
-   }
+   };
 
    return get_json(rl);
 }
@@ -540,4 +564,4 @@ async function get_all_files(dir) {
    return result;
 }
 
-run();
+run().catch(console.error);
