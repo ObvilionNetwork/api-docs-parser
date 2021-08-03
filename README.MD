@@ -6,6 +6,53 @@
 
 > #### Please note that the documentation has not yet been fully translated
 
+## Example code
+```ts
+/*= @group Group name - Group description */
+
+/*= @interface */
+interface File {
+    path: string;
+    size: number,
+    isDir: boolean
+}
+
+/*=
+* @schema CustomError {
+*   code {#number};
+*   message {#string}
+* } - Schema error description
+*/
+
+/*=
+* @name Route for test
+* @desc Same route description
+*
+* @path /path/to/{route}?={id}
+* @type POST
+*
+* @param route - Your description
+* @query id {#number}
+* @permissions TEST_1, TEST_2
+*
+* @header Authorization {#string} - Auth key
+* @header Optional-Header? {#your_custom_type} - More headers
+*
+* @body {
+*   id? {#number} - Optional json field;
+*   test {
+*       test2 {#number | #string} - Multiple values are supported;
+*       id {#number}
+*   }
+* }
+*
+* @error 10013 { #CustomError } - Error code, type, and description
+* @success 20001 {
+*    files { #File[] } - Arrays
+* } - Success code, type, and description
+*/
+```
+
 ## All the arguments and their description
 | Argument | Description | Flags |
 | :------- | :---------: | :---: |
