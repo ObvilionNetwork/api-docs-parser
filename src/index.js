@@ -368,6 +368,10 @@ async function run() {
                info.type = el.name;
             }
 
+            else if (el.arg === 'deprecated') {
+                info.deprecated = true;
+            }
+
             else if (el.arg === 'body') {
                info.body = el.type;
             }
